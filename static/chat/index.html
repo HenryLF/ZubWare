@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/lib/wsMessenger.js" type="module"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@0.12.3/dist/cdn.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"
+    ></script>
+    <title>ZubWare</title>
+  </head>
+  <body>
+    <main class="main">
+      <header class="center">
+        <a href="/">
+          <image src="/assets/logo.svg" class="main-logo" />
+        </a>
+      </header>
+      <section
+        x-data="{
+          items :[],
+          author  :'AnonymousFcker',
+          content : 'TestMsg',
+          sendMsg : null,
+          async init(){
+            this.sendMsg = await initClient()
+          }
+        }"
+        @ws-message.window="items.unshift($event.detail)"
+      >
+      <div>
+        <input x-ref="name" type="text" placeholder="Name" x-model="author">
+        <input x-ref="message" type="text" placeholder="Message" x-model="content">
+        <button @click="sendMsg && author && content && sendMsg(author,content)" >Send</button>
+      </div>
+      
+      <template x-for="item in items">
+        <div class="flex flex-col w-full  px-small border rounded"
+        >
+        <div class="flex flex-row w-full justify-between items-center">
+          <div class="flex flex-row items-center space-x-smaller">
+            <h2 x-text="item.author"
+            ></h2>
+            <h3 x-text="'('+item.id+')'"></h3>
+          </div>
+          <h3 x-text="new Date(item.date).toLocaleString('en-US')"></h2>
+          </div>
+          <p class="prose" x-text="item.content" ></p>
+        </div>
+      </template>
+      
+    </section>
+
+
+      </div>
+      <footer class="center">
+        <h3>Henri & Henry Hacking Manufactory</h3>
+      </footer>
+    </main>
+  </body>
+</html>

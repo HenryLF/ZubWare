@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+@theme {
+  --color-main: #c84630;
+
+  --spacing-smaller: clamp(5px, 1vw, 10px);
+  --spacing-small: clamp(10px, 3vw, 100px);
+  --spacing-main: clamp(20px, 5vw, 250px);
+  --spacing-large: clamp(30px, 8vw, 500px);
+  --spacing-larger: clamp(80px, 10vw, 800px);
+}
+
+body {
+  all: unset;
+}
+
+main {
+  @apply min-h-[100vh] min-w-[100vw];
+  @apply bg-main;
+  @apply flex flex-col;
+  @apply overflow-y-scroll;
+  @apply p-small;
+}
+
+section {
+  @apply flex flex-1 flex-col items-center space-y-small  overflow-y-scroll;
+}
+.main-logo {
+  @apply p-smaller h-large;
+}
+
+.center {
+  @apply flex flex-col items-center;
+}
+
+h2,
+.h2 {
+  @apply font-bold text-center;
+}
+
+h3,
+.h3 {
+  @apply italic text-center text-xs;
+}
+
+.prose {
+  @apply font-bold italic leading-relaxed;
+}
+
+.main-grid {
+  @apply grid grid-cols-3;
+  @apply grid-flow-row-dense;
+  @apply p-main;
+}
+
+.tool-card {
+  @apply flex flex-col items-center;
+}
+
+.tool-icon {
+  @apply p-small h-50;
+}
+
+.new-todo {
+  @apply w-full;
+  @apply flex flex-row justify-around items-center;
+}
+
+.todo-container {
+  @apply relative;
+  @apply w-full p-small;
+  @apply overflow-y-scroll;
+  @apply border rounded;
+}
+.delete-icon {
+  @apply absolute;
+  @apply top-0 right-0;
+  @apply p-smaller;
+}
+
+.drawing-area {
+  @apply relative w-full aspect-video;
+}
+.drawing-element {
+  position: absolute;
+  top: 0;
+  left: 0;
+  @apply size-full aspect-video;
+}
+
+button,
+select {
+  @apply p-smaller font-bold;
+  @apply border-2 rounded;
+}
+button:hover,
+select:hover,
+.tool-icon:hover,
+.delete-icon:hover,
+.hover-grow-animation:hover {
+  @apply scale-110 transition-transform duration-200;
+}
