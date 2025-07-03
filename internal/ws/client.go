@@ -10,9 +10,10 @@ import (
 )
 
 const (
-	PONG_WAIT   = 3 * time.Second
-	WRITE_WAIT  = 1 * time.Second
-	PING_PERIOD = (PONG_WAIT * 9) / 10
+	PONG_WAIT    = 3 * time.Second
+	WRITE_WAIT   = 1 * time.Second
+	PING_PERIOD  = (PONG_WAIT * 9) / 10
+	DEFAULT_NAME = "AnonymousFcker"
 )
 
 var Upgrader = websocket.Upgrader{
@@ -26,11 +27,17 @@ type client struct {
 	broadcaster *broadcaster
 	send        chan ServerMessage
 	id          uuid.UUID
+	name        string
 	closed      bool
 }
 
-func (c *client) Id() string {
-	return c.id.String()
+func (c *client) Info() ClientInfo {
+	return ClientInfo{
+		c.id, c.name,
+	}
+}
+func (c *client) SetName(s string) {
+	c.name = s
 }
 
 func (c *client) Close() {
@@ -135,6 +142,7 @@ func NewClient(w http.ResponseWriter, r *http.Request) (Client, error) {
 		broadcaster: newBroadcaster(),
 		send:        make(chan ServerMessage),
 		id:          uuid.New(),
+		name:        DEFAULT_NAME,
 	}
 	go c.readPump()
 	go c.writePump()

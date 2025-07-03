@@ -43,6 +43,11 @@ h3,
   @apply italic text-center text-xs;
 }
 
+h4,
+.h4 {
+  @apply italic text-center text-[10px];
+}
+
 .prose {
   @apply font-bold italic leading-relaxed;
 }

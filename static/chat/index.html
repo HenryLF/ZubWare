@@ -24,6 +24,7 @@
       </header>
       <section
         x-data="{
+          lobbyInfo : [],
           items :[],
           author  :'AnonymousFcker',
           content : 'TestMsg',
@@ -33,13 +34,33 @@
           }
         }"
         @ws-message.window="items.unshift($event.detail)"
+        @ws-lobbyinfo.window="lobbyInfo =$event.detail"
       >
+
+      <div x-data="{shown:false}" @click="shown = !shown ; console.log(shown)"
+      class="w-full"
+      >
+        <h2>Connected : <span x-text="lobbyInfo.length"></span></h2>
+        <template x-if="shown">
+          <template  x-for="client in lobbyInfo" >
+            <div class="flex justify-evenly w-full" >
+              <h3 x-text="client.name"
+              ></h3>
+              <h4 x-text="'('+client.id+')'"></h4>
+            </div>    
+          </template>
+        </template>
+      </div>
+
+
       <div>
         <input x-ref="name" type="text" placeholder="Name" x-model="author">
         <input x-ref="message" type="text" placeholder="Message" x-model="content">
         <button @click="sendMsg && author && content && sendMsg(author,content)" >Send</button>
       </div>
       
+
+
       <template x-for="item in items">
         <div class="flex flex-col w-full  px-small border rounded"
         >

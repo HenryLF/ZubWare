@@ -171,9 +171,6 @@
   }
 }
 @layer utilities {
-  .collapse {
-    visibility: collapse;
-  }
   .relative {
     position: relative;
   }
@@ -189,17 +186,11 @@
   .col-span-3 {
     grid-column: span 3 / span 3;
   }
-  .block {
-    display: block;
-  }
   .flex {
     display: flex;
   }
   .grid {
     display: grid;
-  }
-  .table {
-    display: table;
   }
   .size-larger {
     width: var(--spacing-larger);
@@ -213,12 +204,6 @@
   }
   .w-full {
     width: 100%;
-  }
-  .flex-1 {
-    flex: 1;
-  }
-  .grow {
-    flex-grow: 1;
   }
   .transform {
     transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
@@ -250,6 +235,9 @@
   .justify-between {
     justify-content: space-between;
   }
+  .justify-evenly {
+    justify-content: space-evenly;
+  }
   .space-y-small {
     :where(& > :not(:last-child)) {
       --tw-space-y-reverse: 0;
@@ -263,14 +251,6 @@
       margin-inline-start: calc(var(--spacing-smaller) * var(--tw-space-x-reverse));
       margin-inline-end: calc(var(--spacing-smaller) * calc(1 - var(--tw-space-x-reverse)));
     }
-  }
-  .truncate {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .overflow-y-scroll {
-    overflow-y: scroll;
   }
   .rounded {
     border-radius: 0.25rem;
@@ -331,6 +311,11 @@ h3, .h3 {
   text-align: center;
   font-size: var(--text-xs);
   line-height: var(--tw-leading, var(--text-xs--line-height));
+  font-style: italic;
+}
+h4, .h4 {
+  text-align: center;
+  font-size: 10px;
   font-style: italic;
 }
 .prose {

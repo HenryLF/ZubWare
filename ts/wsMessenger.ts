@@ -2,6 +2,7 @@ enum ServerCode {
   ConnClose = 0,
   ConnOpen = 1,
   MsgIncoming = 2,
+  LobbyInfo = 3,
 }
 enum ClientCode {
   ConnClose = 0,
@@ -16,6 +17,13 @@ type MessageData = {
   date: string;
 };
 
+type ClientData = {
+id: string;
+  name: string;
+}
+
+type LobbyData = ClientData[];
+
 type ServerMessage =
   | {
       type: ServerCode.ConnClose;
@@ -23,11 +31,15 @@ type ServerMessage =
     }
   | {
       type: ServerCode.ConnOpen;
-      detail: string
+      detail: ClientData;
     }
   | {
       type: ServerCode.MsgIncoming;
       detail: MessageData;
+    }
+  | {
+      type: ServerCode.LobbyInfo;
+      detail: LobbyData;
     };
 
 type ClientMessage =
@@ -48,16 +60,17 @@ window.initClient = function () {
   return new Promise<(author: string, content: string) => void>(
     (resolve, reject) => {
       const ws = new WebSocket(`ws://${window.location.host}/wschat`);
-      let clientId: string;
+      let clientData: ClientData;
 
       function sendMsg(author: string, content: string) {
         if (ws.readyState == ws.CLOSED || ws.readyState == ws.CLOSING) return;
         console.log(author, content);
+        clientData.name = author
         ws.send(
           JSON.stringify({
             type: ClientCode.MsgOutgoing,
             detail: {
-              id: clientId,
+              id: clientData.id,
               author,
               content,
               date: new Date(Date.now()).toString(),
@@ -73,15 +86,17 @@ window.initClient = function () {
         switch (type) {
           case ServerCode.ConnClose:
             event = new CustomEvent("ws-conn-close", { detail });
-            break
+            break;
           case ServerCode.ConnOpen:
-            clientId = detail;
+            clientData  = detail;
             ws.send(JSON.stringify({ type: ClientCode.Listening }));
             event = new CustomEvent("ws-conn-open", { detail });
-            break
+            break;
           case ServerCode.MsgIncoming:
             event = new CustomEvent("ws-message", { detail });
-            
+          break
+          case ServerCode.LobbyInfo:
+            event = new CustomEvent("ws-lobbyinfo", { detail });
         }
         event && window.dispatchEvent(event);
       }

@@ -4,11 +4,13 @@ import (
 	"errors"
 	"net/http"
 	"time"
+	"zubware/internal/utils"
 	"zubware/internal/ws"
 )
 
 const (
 	CLIENT_LISTEN_TIMEOUT = 5 * time.Second
+	LOBBY_INFO_PERIOD     = 5 * time.Second
 )
 
 type hub struct {
@@ -30,6 +32,14 @@ func NewHub() *hub {
 	return &hub
 }
 
+func (h *hub) info() []ws.ClientInfo {
+	out := []ws.ClientInfo{}
+	for client := range h.user {
+		out = append(out, client.Info())
+	}
+	return out
+}
+
 func (h *hub) run() {
 	for {
 		select {
@@ -49,11 +59,17 @@ func (h *hub) run() {
 	}
 }
 
+func (h *hub) broadcastInfo() {
+	h.broadcast <- ws.ServerMessage{Type: ws.ServerLobbyInfo, Payload: h.info()}
+}
+
 func (h *hub) handleClient(sub ws.Client) {
+	tick := time.NewTicker(LOBBY_INFO_PERIOD)
 	msgCh := sub.Sub(ws.ClientMsg)
 	closeCh := sub.Sub(ws.ClientConnClose)
 	defer sub.UnSub(ws.ClientMsg, msgCh)
 	defer sub.UnSub(ws.ClientConnClose, closeCh)
+	h.broadcastInfo()
 	for {
 		select {
 		case msg, ok := <-msgCh:
@@ -61,10 +77,20 @@ func (h *hub) handleClient(sub ws.Client) {
 				h.unreg <- sub
 				return
 			}
+			var data struct {
+				Name string `json:"author"`
+			}
+			err := utils.ParseStruct(msg.Payload, &data)
+			if err == nil && data.Name != sub.Info().Name {
+				sub.SetName(data.Name)
+			}
+
 			h.broadcast <- ws.ServerMessage{Type: ws.ServerMsg, Payload: msg.Payload}
 		case <-closeCh:
 			h.unreg <- sub
 			return
+		case <-tick.C:
+			h.broadcastInfo()
 		}
 
 	}
@@ -79,7 +105,7 @@ func (h *hub) AddClient(w http.ResponseWriter, r *http.Request) error {
 	ch := c.Sub(ws.ClientListening)
 	defer c.UnSub(ws.ClientListening, ch)
 
-	c.Send(ws.ServerMessage{Type: ws.ServerConnOpen, Payload: c.Id()})
+	c.Send(ws.ServerMessage{Type: ws.ServerConnOpen, Payload: c.Info()})
 
 	select {
 	case <-ch:
