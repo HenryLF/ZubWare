@@ -1,7 +1,10 @@
 @import "tailwindcss";
 
 @theme {
-  --color-main: #c84630;
+  --color-main: #e4e6c3;
+  --color-deeper: #d2d59a;
+  --color-emphasis: #dacef2;
+  --color-contrast: #eb99a0;
 
   --spacing-smaller: clamp(5px, 1vw, 10px);
   --spacing-small: clamp(10px, 3vw, 100px);
@@ -25,6 +28,11 @@ main {
 section {
   @apply flex flex-1 flex-col items-center space-y-small  overflow-y-scroll;
 }
+
+.main-grid {
+  @apply grid grid-cols-1 md:grid-cols-3  grid-flow-row-dense;
+}
+
 .main-logo {
   @apply p-smaller h-large;
 }
@@ -52,14 +60,9 @@ h4,
   @apply font-bold italic leading-relaxed;
 }
 
-.main-grid {
-  @apply grid grid-cols-3;
-  @apply grid-flow-row-dense;
-  @apply p-main;
-}
-
 .tool-card {
   @apply flex flex-col items-center;
+  @apply h-full;
 }
 
 .tool-icon {
@@ -94,14 +97,16 @@ h4,
 }
 
 button,
-select {
+select,
+.bordered {
   @apply p-smaller font-bold;
-  @apply border-2 rounded;
+  @apply border-2 rounded text-center;
 }
 button:hover,
 select:hover,
 .tool-icon:hover,
 .delete-icon:hover,
+.bordered:hover,
 .hover-grow-animation:hover {
   @apply scale-110 transition-transform duration-200;
 }
