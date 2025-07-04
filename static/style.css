@@ -175,8 +175,14 @@
   }
 }
 @layer utilities {
+  .visible {
+    visibility: visible;
+  }
   .relative {
     position: relative;
+  }
+  .static {
+    position: static;
   }
   .col-span-1 {
     grid-column: span 1 / span 1;
@@ -193,11 +199,21 @@
   .row-span-4 {
     grid-row: span 4 / span 4;
   }
+  .block {
+    display: block;
+  }
   .flex {
     display: flex;
   }
   .grid {
     display: grid;
+  }
+  .hidden {
+    display: none;
+  }
+  .size-full {
+    width: 100%;
+    height: 100%;
   }
   .size-larger {
     width: var(--spacing-larger);
@@ -217,6 +233,9 @@
   }
   .transform {
     transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
+  }
+  .resize {
+    resize: both;
   }
   .grid-flow-row-dense {
     grid-auto-flow: row dense;
@@ -264,6 +283,20 @@
       margin-block-end: calc(var(--spacing-small) * calc(1 - var(--tw-space-y-reverse)));
     }
   }
+  .space-x-larger {
+    :where(& > :not(:last-child)) {
+      --tw-space-x-reverse: 0;
+      margin-inline-start: calc(var(--spacing-larger) * var(--tw-space-x-reverse));
+      margin-inline-end: calc(var(--spacing-larger) * calc(1 - var(--tw-space-x-reverse)));
+    }
+  }
+  .space-x-small {
+    :where(& > :not(:last-child)) {
+      --tw-space-x-reverse: 0;
+      margin-inline-start: calc(var(--spacing-small) * var(--tw-space-x-reverse));
+      margin-inline-end: calc(var(--spacing-small) * calc(1 - var(--tw-space-x-reverse)));
+    }
+  }
   .space-x-smaller {
     :where(& > :not(:last-child)) {
       --tw-space-x-reverse: 0;
@@ -296,6 +329,9 @@
   .px-small {
     padding-inline: var(--spacing-small);
   }
+  .text-right {
+    text-align: right;
+  }
   .text-2xl {
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
@@ -303,6 +339,9 @@
   .font-bold {
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
+  }
+  .filter {
+    filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
   }
 }
 body {
@@ -414,7 +453,10 @@ h4, .h4 {
   width: 100%;
   height: 100%;
 }
-button, select, .bordered {
+input[type="number"] {
+  text-align: right;
+}
+button, select, .bordered, .bordered-anim {
   padding: var(--spacing-smaller);
   --tw-font-weight: var(--font-weight-bold);
   font-weight: var(--font-weight-bold);
@@ -422,8 +464,9 @@ button, select, .bordered {
   border-style: var(--tw-border-style);
   border-width: 2px;
   text-align: center;
+  height: fit-content;
 }
-button:hover, select:hover, .tool-icon:hover, .delete-icon:hover, .bordered:hover, .hover-grow-animation:hover {
+button:hover, select:hover, .tool-icon:hover, .delete-icon:hover, .hover-grow-animation:hover, .bordered-anim:hover {
   --tw-scale-x: 110%;
   --tw-scale-y: 110%;
   --tw-scale-z: 110%;
@@ -473,6 +516,59 @@ button:hover, select:hover, .tool-icon:hover, .delete-icon:hover, .bordered:hove
   syntax: "*";
   inherits: false;
 }
+@property --tw-blur {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-brightness {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-contrast {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-grayscale {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-hue-rotate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-invert {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-opacity {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-saturate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-sepia {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-drop-shadow {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-drop-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-drop-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-drop-shadow-size {
+  syntax: "*";
+  inherits: false;
+}
 @property --tw-leading {
   syntax: "*";
   inherits: false;
@@ -508,6 +604,19 @@ button:hover, select:hover, .tool-icon:hover, .delete-icon:hover, .bordered:hove
       --tw-space-x-reverse: 0;
       --tw-border-style: solid;
       --tw-font-weight: initial;
+      --tw-blur: initial;
+      --tw-brightness: initial;
+      --tw-contrast: initial;
+      --tw-grayscale: initial;
+      --tw-hue-rotate: initial;
+      --tw-invert: initial;
+      --tw-opacity: initial;
+      --tw-saturate: initial;
+      --tw-sepia: initial;
+      --tw-drop-shadow: initial;
+      --tw-drop-shadow-color: initial;
+      --tw-drop-shadow-alpha: 100%;
+      --tw-drop-shadow-size: initial;
       --tw-leading: initial;
       --tw-scale-x: 1;
       --tw-scale-y: 1;

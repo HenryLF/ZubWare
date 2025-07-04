@@ -96,17 +96,23 @@ h4,
   @apply size-full aspect-video;
 }
 
+input[type="number"] {
+  @apply text-right;
+}
+
 button,
 select,
-.bordered {
+.bordered,
+.bordered-anim {
   @apply p-smaller font-bold;
   @apply border-2 rounded text-center;
+  @apply h-fit;
 }
 button:hover,
 select:hover,
 .tool-icon:hover,
 .delete-icon:hover,
-.bordered:hover,
-.hover-grow-animation:hover {
+.hover-grow-animation:hover,
+.bordered-anim:hover {
   @apply scale-110 transition-transform duration-200;
 }

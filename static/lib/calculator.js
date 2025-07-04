@@ -5,11 +5,13 @@ var BinaryOperator;
     BinaryOperator["Sub"] = "-";
     BinaryOperator["Mul"] = "*";
     BinaryOperator["Div"] = "/";
+    BinaryOperator["Pow"] = "^";
 })(BinaryOperator || (BinaryOperator = {}));
 var UnaryOperator;
 (function (UnaryOperator) {
     UnaryOperator["Inv"] = "inv";
     UnaryOperator["Opp"] = "opp";
+    UnaryOperator["SquareRoot"] = "sqrt";
 })(UnaryOperator || (UnaryOperator = {}));
 let state = { leftHand: "", rightHand: "" };
 let precision = 3;
@@ -43,6 +45,9 @@ function processResult() {
         case BinaryOperator.Mul:
             res = l * r;
             break;
+        case BinaryOperator.Pow:
+            res = Math.pow(l, r);
+            break;
         default:
             res = l;
     }
@@ -55,10 +60,12 @@ function processResult() {
 }
 //@ts-ignore
 window.typeNumber = function (k) {
+    console.log(state);
     if (state.operand) {
         state.rightHand += k.toString();
     }
     else {
+        state.leftHand = state.leftHand.replace("NaN", "");
         state.leftHand += k.toString();
     }
     updateResult();
@@ -128,6 +135,14 @@ window.typeUnary = function (op) {
             }
             else {
                 state.leftHand = (1 / parseFloat(state.leftHand)).toString();
+            }
+            break;
+        case UnaryOperator.SquareRoot:
+            if (state.operand) {
+                state.rightHand = Math.sqrt(parseFloat(state.rightHand)).toString();
+            }
+            else {
+                state.leftHand = Math.sqrt(parseFloat(state.leftHand)).toString();
             }
             break;
     }

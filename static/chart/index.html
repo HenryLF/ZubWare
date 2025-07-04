@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/style.css" />
+    <title>ZubWare</title>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@0.12.3/dist/cdn.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"
+    ></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+      let ch;
+      window.addEventListener("draw", (ev) => {
+        ch && ch.destroy();
+        const { data, config } = ev.detail;
+        console.log(data, ev);
+        ch = new Chart(document.getElementById("chart"), {
+          type: config.type,
+          data: {
+            labels: data.map((e) => e.label),
+            datasets: [{ data: data.map((e) => e.x), ...config.chart }],
+          },
+        });
+      });
+    </script>
+    <script type="module">
+      import initDB from "/lib/indexedDatabase.js";
+      window.db = await initDB("charts");
+    </script>
+  </head>
+  <body>
+    <main class="main">
+      <header class="center">
+        <a href="/">
+          <image src="/assets/logo.svg" class="main-logo" />
+        </a>
+      </header>
+      <section
+        x-data="{
+            data : [],
+            config:{type : 'line' , chart:{}}
+        }"
+        x-init="$watch('$data', () => $dispatch('draw', { data,config }))"
+      >
+        <div class="grid grid-cols-5 grid-rows-1 size-full">
+          <div class="col-span-2 row-span-1 size-full">
+            <div
+              class="bordered grid grid-rows-1 grid-cols-6"
+              x-data="{label:'' , x:0}"
+            >
+              <span class="row-span-1 col-span-1"></span>
+              <input
+                type="text"
+                name="label"
+                x-model="label"
+                placeholder="label"
+                autocomplete="off"
+                class="row-span-1 col-span-2 p-smaller"
+              />
+              <input
+                type="number"
+                name="x"
+                x-model="x"
+                placeholder="x"
+                autocomplete="off"
+                class="row-span-1 col-span-2 p-smaller"
+              />
+              <button
+                @click="label = label == '' ? data.length : label; data.push({label,x}) ; label=''"
+                class="row-span-1 col-span-1"
+              >
+                ok
+              </button>
+            </div>
+            <template x-for="(it, k) in data" :key="k">
+              <div class="grid grid-rows-1 grid-cols-6">
+                <span class="row-span-1 col-span-1" x-text="k"></span>
+                <span class="row-span-1 col-span-2" x-text="it.label"></span>
+                <span class="row-span-1 col-span-2" x-text="it.x"></span>
+                <image
+                  class="hover-grow-animation row-span-1 col-span-1"
+                  src="/assets/delete.svg"
+                  @click="data = [...data.slice(0,k),... data.slice(k+1)]"
+                />
+              </div>
+            </template>
+            <template x-if="data.length>0">
+              <div
+                class="w-full flex items-center justify-evenly"
+                x-data="{datasets : [] , id : ''}"
+                x-init="datasets = await db.getKeys()"
+              >
+                <input
+                  type="text"
+                  class="bordered"
+                  list="datasets"
+                  x-model="id"
+                />
+                <datalist id="datasets">
+                  <template x-for="dataset in datasets">
+                    <option
+                      :value="dataset.id"
+                      x-text="dataset.id"
+                      x-init="console.log(dataset)"
+                    ></option>
+                  </template>
+                </datalist>
+                <button
+                  @click="await db.storeItem({type : '', id , data }); datasets = await db.getKeys()"
+                >
+                  Save
+                </button>
+                <button
+                  @click="imported= (await db.getItem(id)) ; imported.data && (data=imported.data)"
+                >
+                  Load
+                </button>
+              </div>
+            </template>
+          </div>
+          <div class="col-span-3 row-span-1 size-full">
+            <div class="bordered flex flex-row">
+              <select x-model="config.type">
+                <option value="line">Line</option>
+                <option value="bar">Bar</option>
+                <option value="pie">Pie</option>
+              </select>
+              <template
+                x-if="config.type == 'line'"
+                x-data="{chart : {tension : 0 , fill : false}}"
+                x-init="$watch('chart', value => config.chart = value)"
+              >
+                <div class="flex items-center justify-evenly w-full">
+                  <span class="flex flex-col items-center">
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step=".05"
+                      name="tension"
+                      x-model="chart.tension"
+                    />
+                    <label for="tension"
+                      >Tension <span x-text="chart.tension"></span
+                    ></label>
+                  </span>
+                  <span class="flex flex-col items-center">
+                    <input type="checkbox" name="fill" x-model="chart.fill" />
+                    <label for="fill">Fill</label>
+                  </span>
+                </div>
+              </template>
+
+              <template
+                x-if="config.type == 'bar' | config.type == 'pie'"
+                x-data="{chart : {borderWidth : 0 , backgroundColor : '#000000' , borderColor: '#000000'}}"
+                x-init="$watch('chart', value => config.chart = value)"
+              >
+                <div class="flex items-center justify-evenly w-full">
+                  <span class="flex flex-col items-center">
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      step=".5"
+                      name="borderWitdh"
+                      x-model="chart.borderWidth"
+                    />
+                    <label for="borderWitdh"
+                      >Border Witdh <span x-text="chart.borderWitdh"></span
+                    ></label>
+                  </span>
+                  <span class="flex flex-col items-center">
+                    <input
+                      type="color"
+                      name="borderColor"
+                      x-model="chart.borderColor"
+                    />
+                    <label for="borderColor">Border Color </label>
+                  </span>
+                  <span class="flex flex-col items-center">
+                    <input
+                      type="color"
+                      name="backgroundColor"
+                      x-model="chart.backgroundColor"
+                    />
+                    <label for="backgroundColor">Background Color </label>
+                  </span>
+                </div>
+              </template>
+            </div>
+            <canvas id="chart" class="size-full"></canvas>
+          </div>
+        </div>
+      </section>
+      <footer class="center">
+        <h3>Henri & Henry Hacking Manufactory</h3>
+      </footer>
+    </main>
+  </body>
+</html>

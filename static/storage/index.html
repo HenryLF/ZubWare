@@ -8,10 +8,6 @@
     <title>ZubWare</title>
     <script
       defer
-      src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@0.12.3/dist/cdn.min.js"
-    ></script>
-    <script
-      defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"
     ></script>
     <script>
@@ -37,21 +33,23 @@
         x-data="{db : null , list : [] ,copied: false}"
         @store-changed.window="db=$event.detail; list = await db.getAll() ; copied = false"
       >
-        <select id="store" name="store">
-          <option value="todos">ToDos</option>
-          <option value="todos">ToDos</option>
-        </select>
-        <label for="store">Store Name</label>
+        <div class="flex items-center space-x-small">
+          <select id="store" name="store">
+            <option value="todos">ToDos</option>
+            <option value="charts">Charts</option>
+          </select>
+          <label for="store">Store Name</label>
+        </div>
         <template x-for="k in list ">
           <div class="w-full grid grid-cols-6 grid-rows-1">
-            <div class="col-span-3 center" ><span x-text="k.id"></span></div>
-            <div class="col-span-1 center" ><span x-text="k.type"></span></div>
-            <div class="col-span-1 center" ><span x-text="k.title"></span></div>
-            <div class="col-span-1 center" >
+            <div class="col-span-3 center"><span x-text="k.id"></span></div>
+            <div class="col-span-1 center"><span x-text="k.type"></span></div>
+            <div class="col-span-1 center"><span x-text="k.title"></span></div>
+            <div class="col-span-1 center">
               <image
-              class="col-span-1"
-              src="/assets/delete.svg"
-              @click="await db.removeItem(k.id); list = await db.getAll()"
+                class="col-span-1"
+                src="/assets/delete.svg"
+                @click="await db.removeItem(k.id); list = await db.getAll()"
               ></image>
             </div>
           </div>

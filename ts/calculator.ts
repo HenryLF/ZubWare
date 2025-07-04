@@ -3,11 +3,13 @@ enum BinaryOperator {
   Sub = "-",
   Mul = "*",
   Div = "/",
+  Pow = "^",
 }
 
 enum UnaryOperator {
   Inv = "inv",
   Opp = "opp",
+  SquareRoot = "sqrt",
 }
 
 type State = {
@@ -52,6 +54,9 @@ function processResult() {
     case BinaryOperator.Mul:
       res = l * r;
       break;
+    case BinaryOperator.Pow:
+      res = Math.pow(l, r);
+      break;
     default:
       res = l;
   }
@@ -65,9 +70,11 @@ function processResult() {
 
 //@ts-ignore
 window.typeNumber = function (k: number) {
+  console.log(state);
   if (state.operand) {
     state.rightHand += k.toString();
   } else {
+    state.leftHand = state.leftHand.replace("NaN", "");
     state.leftHand += k.toString();
   }
   updateResult();
@@ -138,6 +145,13 @@ window.typeUnary = function (op: UnaryOperator) {
         state.rightHand = (1 / parseFloat(state.rightHand)).toString();
       } else {
         state.leftHand = (1 / parseFloat(state.leftHand)).toString();
+      }
+      break;
+    case UnaryOperator.SquareRoot:
+      if (state.operand) {
+        state.rightHand = Math.sqrt(parseFloat(state.rightHand)).toString();
+      } else {
+        state.leftHand = Math.sqrt(parseFloat(state.leftHand)).toString();
       }
       break;
   }

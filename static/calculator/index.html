@@ -7,10 +7,6 @@
     <script src="/lib/wsMessenger.js" type="module"></script>
     <script
       defer
-      src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@0.12.3/dist/cdn.min.js"
-    ></script>
-    <script
-      defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"
     ></script>
     <script type="module" src="/lib/calculator.js"></script>
@@ -44,13 +40,16 @@
           break
         }}"
       >
-        <div class="bordered w-8/10 text-2xl font-bold" x-text="res"></div>
+        <div
+          class="bordered w-8/10 text-right text-2xl font-bold"
+          x-text="res"
+        ></div>
 
         <div class="grid grid-cols-5 grid-flow-row-dense w-8/10">
           <div class="grid grid-cols-3 grid-rows-3 col-span-3 row-span-1">
             <template x-for="(_,num) in Array(9).fill(null)">
               <div
-                class="bordered row-span-1 col-span-1 bg-deeper"
+                class="bordered-anim row-span-1 col-span-1 bg-deeper"
                 @click="typeNumber(num+1)"
                 x-text="num+1"
               ></div>
@@ -60,7 +59,7 @@
           <div class="flex flex-col col-span-1 row-span-4">
             <template x-for="op in binaryOp">
               <div
-                class="bordered row-span-1 col-span-1 bg-contrast"
+                class="bordered-anim row-span-1 col-span-1 bg-contrast"
                 @click="typeBinary(op)"
                 x-text="op"
               ></div>
@@ -69,29 +68,41 @@
 
           <div class="flex flex-col col-span-1 row-span-4">
             <div
-              class="bordered row-span-1 col-span-1 bg-contrast"
+              class="bordered-anim row-span-1 col-span-1 bg-contrast"
               @click="typeUnary('inv')"
             >
               1/x
             </div>
 
             <div
-              class="bordered row-span-1 col-span-1 bg-contrast"
+              class="bordered-anim row-span-1 col-span-1 bg-contrast"
               @click="typeUnary('opp')"
             >
               -x
+            </div>
+            <div
+              class="bordered-anim row-span-1 col-span-1 bg-contrast"
+              @click="typeUnary('sqrt')"
+            >
+              &#8730;x
+            </div>
+            <div
+              class="bordered-anim row-span-1 col-span-1 bg-contrast"
+              @click="typeBinary('^')"
+            >
+              x<sup>y</sup>
             </div>
           </div>
 
           <div class="col-span-3 row-span-1 grid grid-cols-3 grid-rows-1">
             <div
-              class="bordered p-small row-span-1 col-span-1 bg-contrast"
+              class="bordered-anim p-small row-span-1 col-span-1 bg-contrast"
               @click="typeDot('.')"
             >
               .
             </div>
             <div
-              class="bordered p-small row-span-1 col-span-1 bg-deeper"
+              class="bordered-anim p-small row-span-1 col-span-1 bg-deeper"
               @click="typeNumber(0)"
             >
               0
@@ -104,21 +115,23 @@
             </div>
           </div>
         </div>
-        <div class="flex flex-row">
+        <div class="flex flex-row items-center space-x-larger">
           <button @click="clearResult()">Clear</button>
           <button @click="eraseLast()">Erase</button>
+          <div class="bordered flex flex-col space-x-smaller">
+            <input
+              name="precision"
+              type="range"
+              min="0"
+              max="10"
+              x-model="precision"
+              @change="setPrecision(precision)"
+            />
+            <label for="precision" class="h2"
+              >Precision <span x-text="precision"></span
+            ></label>
+          </div>
         </div>
-        <input
-          name="precision"
-          type="range"
-          min="0"
-          max="10"
-          x-model="precision"
-          @change="setPrecision(precision)"
-        />
-        <label for="precision" class="h2"
-          >Precision <span x-text="precision"></span
-        ></label>
       </section>
       <footer class="center">
         <h3>Henri & Henry Hacking Manufactory</h3>

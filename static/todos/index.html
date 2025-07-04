@@ -56,7 +56,6 @@
       window.onload =async   function(){
         let keys = await window.db.getKeys()
         for (let data of keys){
-          console.log(data)
           window.dispatchEvent(new CustomEvent('load-todo',{detail : data}))
           await new Promise((r) => setTimeout(r,100))         
           }
