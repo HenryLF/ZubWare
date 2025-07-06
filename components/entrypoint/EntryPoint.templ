@@ -1,0 +1,27 @@
+package entrypoint
+
+
+templ EntryPoint(token string , url string) {
+<section id="ajax-target" x-data="{}">
+    <div class="w-8/10">
+        <p>Auth. token : <span x-ref="token">{token}</span>
+            <image src="/assets/copy.svg" @click="setClipboard($refs.token.textContent)"
+                class="size-main hover:opacity-80"></image>
+        </p>
+        <p>URL: <span x-text="window.location.host" x-ref="host"></span><span x-ref="url">{url}</span>
+            <image src="/assets/copy.svg" @click="setClipboard($refs.host.textContent + $refs.url.textContent)"
+                class="size-main hover:opacity-80"></image>
+        </p>
+    </div>
+</section>
+}
+
+
+templ Error(reason string) {
+<section id="ajax-target">
+    <div class="w-8/10">{reason}</div>
+    <a href="/api">
+        <button>Return</button>
+    </a>
+</section>
+}

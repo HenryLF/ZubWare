@@ -4,11 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/style.css" />
-    <script src="/lib/common.js" type="module"></script>
-      <script type="module">
-      import initDB from "/lib/indexedDatabase.js"
-      window.db =  await initDB("todos")
-    </script>
+    <script src="/lib/sendJSON.js" type="module"></script>
+
     <script src="/lib/htmlCanvas.js"></script>
     <script
       defer
@@ -36,7 +33,12 @@
 
       <div id="new-todo" class="new-todo" x-data="{type : 'text'}">
         <div>
-          <select name="type" id="todo-type" autocomplete="off" @change="type=$event.target.value">
+          <select
+            name="type"
+            id="todo-type"
+            autocomplete="off"
+            @change="type=$event.target.value"
+          >
             <option value="text">Text</option>
             <option value="checklist">Checklist</option>
             <option value="image">Image</option>
@@ -44,22 +46,22 @@
         </div>
         <image
           @click="dispatchEvent(new CustomEvent('load-todo',{detail : {id : null, type}}))"
-          src="/assets/add.svg" class="size-larger  p-small hover-grow-animation"
-        >
-      </div>
+          src="/assets/add.svg"
+          class="size-larger p-small hover-grow"
+        />
       <footer class="center">
         <h3>Henri & Henry Hacking Manufactory</h3>
       </footer>
     </main>
 
-    <script defer>
-      window.onload =async   function(){
-        let keys = await window.db.getKeys()
-        for (let data of keys){
-          window.dispatchEvent(new CustomEvent('load-todo',{detail : data}))
-          await new Promise((r) => setTimeout(r,100))         
-          }
-        }
+    <script type="module">
+      import initDB from "/lib/indexedDatabase.js";
+      window.db = await initDB("todos");
+      let keys = await window.db.getKeys();
+      for (let data of keys) {
+        window.dispatchEvent(new CustomEvent("load-todo", { detail: data }));
+        await new Promise((r) => setTimeout(r, 100));
+      }
     </script>
   </body>
 </html>

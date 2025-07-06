@@ -17,6 +17,14 @@ body {
   all: unset;
 }
 
+*::-webkit-scrollbar {
+  display: none;
+}
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 main {
   @apply min-h-[100vh] min-w-[100vw];
   @apply bg-main;
@@ -38,7 +46,7 @@ section {
 }
 
 .center {
-  @apply flex flex-col items-center;
+  @apply flex items-center justify-center;
 }
 
 h2,
@@ -57,7 +65,11 @@ h4,
 }
 
 .prose {
-  @apply font-bold italic leading-relaxed;
+  @apply font-bold italic leading-relaxed text-left;
+}
+
+.code {
+  @apply font-[monospace];
 }
 
 .tool-card {
@@ -102,17 +114,17 @@ input[type="number"] {
 
 button,
 select,
-.bordered,
-.bordered-anim {
+input[type="text"],
+.bordered{
   @apply p-smaller font-bold;
-  @apply border-2 rounded text-center;
+  @apply border-2 rounded;
   @apply h-fit;
 }
+
 button:hover,
 select:hover,
 .tool-icon:hover,
 .delete-icon:hover,
-.hover-grow-animation:hover,
-.bordered-anim:hover {
+.hover-grow:hover {
   @apply scale-110 transition-transform duration-200;
 }

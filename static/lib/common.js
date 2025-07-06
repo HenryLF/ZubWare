@@ -1,5 +1,6 @@
 "use strict";
 //@ts-ignore
-window.sendJSON = function (obj) {
-    return { json: JSON.stringify(obj) };
+window.enableTextAreaTab = function (ev) {
+    console.log(ev);
+    if (ev.key) { }
 };

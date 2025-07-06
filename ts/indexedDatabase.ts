@@ -7,7 +7,7 @@ function unproxify(prox: object) {
   return JSON.parse(JSON.stringify(prox));
 }
 export default function initDataBase(storeName: string) {
-  console.log(storeName);
+  console.log(`Oppenning local DB store ${storeName}.`);
   return new Promise((resolve, reject) => {
     const request = indexedDB.open("ZubWare");
     let db: IDBDatabase;
@@ -15,7 +15,7 @@ export default function initDataBase(storeName: string) {
     function upgradeNeeded(this: IDBOpenDBRequest, ev: IDBVersionChangeEvent) {
       const db = this.result;
       if (!db.objectStoreNames.contains(storeName)) {
-        console.log("store created", storeName);
+        console.log(`New store created : ${storeName}.`);
         const store = db.createObjectStore(storeName, {
           keyPath: "id",
         });
@@ -29,7 +29,7 @@ export default function initDataBase(storeName: string) {
 
     request.onsuccess = function () {
       db = this.result;
-      console.log("success", db.objectStoreNames);
+      console.log(`Indexed DB sucessfully openned.`);
       if (!db.objectStoreNames.contains(storeName)) {
         db.close();
         const upgradeRequest = indexedDB.open("ZubWare", db.version + 1);
@@ -52,7 +52,8 @@ function createHandlers(db: IDBDatabase, storeName: string) {
       const request = store.put(unproxify(item)); // Overwrites existing item with same uid
 
       request.onsuccess = () => resolve();
-      request.onerror = (event) => console.error("Update error:", event.target);
+      request.onerror = (event) =>
+        console.error(`Indexed DB update error ${storeName}: `, event.target);
     });
   }
 
@@ -60,12 +61,11 @@ function createHandlers(db: IDBDatabase, storeName: string) {
     return new Promise<string>((resolve) => {
       const transaction = db.transaction(storeName, "readwrite");
       const store = transaction.objectStore(storeName);
-      console.log(id);
       const request = store.delete(id);
 
       request.onsuccess = () => resolve(id);
       request.onerror = (event) =>
-        console.error("Deletion error:", event.target);
+        console.error(`Indexed DB delete error ${storeName}: `, event.target);
     });
   }
 
@@ -78,7 +78,7 @@ function createHandlers(db: IDBDatabase, storeName: string) {
 
       request.onsuccess = () => resolve(request.result);
       request.onerror = (event) =>
-        console.error("Deletion error:", event.target);
+        console.error(`Indexed DB get error ${storeName}: `, event.target);
     });
   }
 
@@ -97,7 +97,7 @@ function createHandlers(db: IDBDatabase, storeName: string) {
         resolve(res);
       };
       request.onerror = (event) =>
-        console.error("GetKeys error:", event.target);
+        console.error(`Indexed DB getKeys error ${storeName}: `, event.target);
     });
   }
 
@@ -112,10 +112,9 @@ function createHandlers(db: IDBDatabase, storeName: string) {
         resolve(request.result);
       };
       request.onerror = (event) =>
-        console.error("GetKeys error:", event.target);
+        console.error(`Indexed DB getAll error ${storeName}: `, event.target);
     });
   }
-
 
   return { storeItem, removeItem, getItem, getKeys, getAll };
 }

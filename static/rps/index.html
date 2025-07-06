@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/style.css" />
-    <script src="/lib/wsMessenger.js" type="module"></script>
+    <script src="/lib/wsGameRPS.js" type="module"></script>
     <script
       defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"
@@ -23,7 +23,7 @@
           lobbyInfo : [],
           items :[],
           author  :'AnonymousFcker',
-          content : '',
+          content : 'TestMsg',
           sendMsg : null,
           async init(){
             this.sendMsg = await initClient()
@@ -48,17 +48,13 @@
         </template>
       </div>
 
-      <div class="w-full p-small flex flex-col md:grid md:grid-cols-10 md:grid-rows-1 bordered">
-        <div class="col-span-2 row-span-1 center p-smaller" >
-          <input class="w-full" type="text" placeholder="Name" x-model="author">
-        </div>
-        <textarea rows=3 class="md:col-span-7 col-span-1 row-span-1 bordered prose" type="text" placeholder="Message" x-model="content"
-        @keyup.enter="$refs.send.click()" 
-        ></textarea>
-        <div class="col-span-1 row-span-1 center p-smaller">
-          <button x-ref="send"  @click="sendMsg && author && content && sendMsg(author,content); content = ''"
-          >Send</button>
-        </div>
+      <div>
+        <input x-ref="name" type="text" placeholder="Name" x-model="author">
+        <input x-ref="message" type="text" placeholder="Message" x-model="content"
+        @keyup.enter="sendMsg && author && content && sendMsg(author,content)" 
+        >
+        <button @click="sendMsg && author && content && sendMsg(author,content)"
+        >Send</button>
       </div>
       
 

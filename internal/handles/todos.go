@@ -1,7 +1,6 @@
 package handles
 
 import (
-	"log"
 	"net/http"
 	"zubware/components/todos"
 	"zubware/internal/utils"
@@ -11,13 +10,12 @@ import (
 
 type newTodoPayload struct {
 	Type string        `json:"type"`
-	Id   uuid.NullUUID `json:id`
+	Id   uuid.NullUUID `json:"id"`
 }
 
 func Todos(w http.ResponseWriter, r *http.Request) {
 	data := newTodoPayload{}
 	utils.ParseBodyForm(r, &data)
-	log.Println(data)
 	switch data.Type {
 	case "text":
 		todos.TextToDo(data.Id).Render(r.Context(), w)

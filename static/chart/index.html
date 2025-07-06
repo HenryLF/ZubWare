@@ -5,22 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/style.css" />
     <title>ZubWare</title>
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@0.12.3/dist/cdn.min.js"
-    ></script>
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"
-    ></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module">
+      import initDB from "/lib/indexedDatabase.js";
+      window.db = await initDB("charts");
+    </script>
+    <script>
       let ch;
       window.addEventListener("draw", (ev) => {
         ch && ch.destroy();
         const { data, config } = ev.detail;
-        console.log(data, ev);
         ch = new Chart(document.getElementById("chart"), {
           type: config.type,
           data: {
@@ -30,10 +23,11 @@
         });
       });
     </script>
-    <script type="module">
-      import initDB from "/lib/indexedDatabase.js";
-      window.db = await initDB("charts");
-    </script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
     <main class="main">
@@ -49,11 +43,12 @@
         }"
         x-init="$watch('$data', () => $dispatch('draw', { data,config }))"
       >
-        <div class="grid grid-cols-5 grid-rows-1 size-full">
+        <div class="flex flex-col md:grid grid-cols-5 grid-rows-1 size-full">
           <div class="col-span-2 row-span-1 size-full">
             <div
               class="bordered grid grid-rows-1 grid-cols-6"
               x-data="{label:'' , x:0}"
+              @keyup.enter="label = label == '' ? data.length : label; data.push({label,x})"
             >
               <span class="row-span-1 col-span-1"></span>
               <input
@@ -82,10 +77,18 @@
             <template x-for="(it, k) in data" :key="k">
               <div class="grid grid-rows-1 grid-cols-6">
                 <span class="row-span-1 col-span-1" x-text="k"></span>
-                <span class="row-span-1 col-span-2" x-text="it.label"></span>
-                <span class="row-span-1 col-span-2" x-text="it.x"></span>
+                <input
+                  type="text"
+                  class="row-span-1 col-span-2"
+                  x-model="it.label"
+                />
+                <input
+                  type="number"
+                  class="row-span-1 col-span-2"
+                  x-model="it.x"
+                />
                 <image
-                  class="hover-grow-animation row-span-1 col-span-1"
+                  class="hover-grow row-span-1 col-span-1"
                   src="/assets/delete.svg"
                   @click="data = [...data.slice(0,k),... data.slice(k+1)]"
                 />
@@ -93,8 +96,8 @@
             </template>
             <template x-if="data.length>0">
               <div
-                class="w-full flex items-center justify-evenly"
-                x-data="{datasets : [] , id : ''}"
+                class="w-full flex items-center justify-evenly m-smaller"
+                x-data="{datasets : [] , id : '' }"
                 x-init="datasets = await db.getKeys()"
               >
                 <input
@@ -102,14 +105,11 @@
                   class="bordered"
                   list="datasets"
                   x-model="id"
+                  @keyup.enter="let imported= await db.getItem(id) ; imported.data && (data=imported.data)"
                 />
                 <datalist id="datasets">
                   <template x-for="dataset in datasets">
-                    <option
-                      :value="dataset.id"
-                      x-text="dataset.id"
-                      x-init="console.log(dataset)"
-                    ></option>
+                    <option :value="dataset.id" x-text="dataset.id"></option>
                   </template>
                 </datalist>
                 <button
@@ -118,7 +118,7 @@
                   Save
                 </button>
                 <button
-                  @click="imported= (await db.getItem(id)) ; imported.data && (data=imported.data)"
+                  @click="let imported= await db.getItem(id) ; imported.data && (data=imported.data)"
                 >
                   Load
                 </button>
@@ -134,7 +134,7 @@
               </select>
               <template
                 x-if="config.type == 'line'"
-                x-data="{chart : {tension : 0 , fill : false}}"
+                x-data="{chart : {tension : 0 , fill : false , borderColor : '#000000'}}"
                 x-init="$watch('chart', value => config.chart = value)"
               >
                 <div class="flex items-center justify-evenly w-full">
@@ -146,21 +146,39 @@
                       step=".05"
                       name="tension"
                       x-model="chart.tension"
+                      class="max-w-1/3"
                     />
-                    <label for="tension"
-                      >Tension <span x-text="chart.tension"></span
-                    ></label>
+                    <label for="tension">
+                      Tension <span x-text="chart.tension"></span>
+                    </label>
                   </span>
+
                   <span class="flex flex-col items-center">
-                    <input type="checkbox" name="fill" x-model="chart.fill" />
-                    <label for="fill">Fill</label>
+                    <input
+                      type="color"
+                      name="color"
+                      x-model="chart.borderColor"
+                    />
+                    <label for="tension">Color </label>
+                  </span>
+
+                  <span class="flex flex-col items-center">
+                    <input
+                      type="color"
+                      name="color"
+                      x-model="chart.backgroundColor"
+                    />
+                    <label for="tension">
+                      <input type="checkbox" name="fill" x-model="chart.fill" />
+                      Fill Color</label
+                    >
                   </span>
                 </div>
               </template>
 
               <template
                 x-if="config.type == 'bar' | config.type == 'pie'"
-                x-data="{chart : {borderWidth : 0 , backgroundColor : '#000000' , borderColor: '#000000'}}"
+                x-data="{chart : {borderWidth : 0 , backgroundColor : [] , borderColor: []}}"
                 x-init="$watch('chart', value => config.chart = value)"
               >
                 <div class="flex items-center justify-evenly w-full">
@@ -178,19 +196,29 @@
                     ></label>
                   </span>
                   <span class="flex flex-col items-center">
-                    <input
-                      type="color"
-                      name="borderColor"
-                      x-model="chart.borderColor"
-                    />
+                    <div class="flex flex-row flex-wrap items-center">
+                      <template x-for="(it,k) in data">
+                        <input
+                          type="color"
+                          name="borderColor"
+                          x-model="chart.borderColor[k]"
+                          x-init="chart.borderColor[k]='#000000'"
+                        />
+                      </template>
+                    </div>
                     <label for="borderColor">Border Color </label>
                   </span>
                   <span class="flex flex-col items-center">
-                    <input
-                      type="color"
-                      name="backgroundColor"
-                      x-model="chart.backgroundColor"
-                    />
+                    <div class="flex flex-row flex-wrap items-center">
+                      <template x-for="(it,k) in data">
+                        <input
+                          type="color"
+                          name="backgroundColor"
+                          x-model="chart.backgroundColor[k]"
+                          x-init="chart.backgroundColor[k]='#000000'"
+                        />
+                      </template>
+                    </div>
                     <label for="backgroundColor">Background Color </label>
                   </span>
                 </div>
