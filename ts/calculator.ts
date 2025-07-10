@@ -68,8 +68,7 @@ function processResult() {
   };
 }
 
-//@ts-ignore
-window.typeNumber = function (k: number) {
+export function typeNumber(k: number) {
   console.log(state);
   if (state.operand) {
     state.rightHand += k.toString();
@@ -78,29 +77,26 @@ window.typeNumber = function (k: number) {
     state.leftHand += k.toString();
   }
   updateResult();
-};
+}
 
-//@ts-ignore
-window.clearResult = function () {
+export function clearResult() {
   state = {
     leftHand: "",
     rightHand: "",
   };
   updateResult();
-};
+}
 
-//@ts-ignore
-window.eraseLast = function () {
+export function eraseLast() {
   if (state.operand && state.rightHand) {
     state.rightHand = state.rightHand.slice(0, state.rightHand.length - 1);
   } else {
     state.leftHand = state.leftHand.slice(0, state.leftHand.length - 1);
   }
   updateResult();
-};
+}
 
-//@ts-ignore
-window.typeDot = function () {
+export function typeDot() {
   if (state.operand) {
     if (state.rightHand.includes(".")) return;
     state.rightHand += ".";
@@ -109,29 +105,25 @@ window.typeDot = function () {
     state.leftHand += ".";
   }
   updateResult();
-};
+}
 
-//@ts-ignore
-window.typeBinary = function (k: BinaryOperator) {
+export function typeBinary(k: BinaryOperator) {
   if (state.leftHand) {
     state.operand = k;
   }
   updateResult();
-};
+}
 
-//@ts-ignore
-window.typeResult = function () {
+export function typeResult() {
   processResult();
   updateResult();
-};
+}
 
-//@ts-ignore
-window.setPrecision = function (k: number) {
+export function setPrecision(k: number) {
   precision = k;
-};
+}
 
-//@ts-ignore
-window.typeUnary = function (op: UnaryOperator) {
+export function typeUnary(op: UnaryOperator) {
   switch (op) {
     case UnaryOperator.Opp:
       if (state.operand) {
@@ -156,4 +148,4 @@ window.typeUnary = function (op: UnaryOperator) {
       break;
   }
   updateResult();
-};
+}

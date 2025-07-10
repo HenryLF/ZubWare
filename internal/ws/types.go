@@ -7,8 +7,12 @@ type ServerCode int
 const (
 	ServerConnClose = ServerCode(iota)
 	ServerConnOpen
-	ServerMsg
+	ServerHubMsg
+	ServerHubInfo
+	ServerEnterPool
+	ServerEnterLobby
 	ServerLobbyInfo
+	ServerGameResult
 )
 
 type ClientCode int
@@ -17,6 +21,9 @@ const (
 	ClientConnClose = ClientCode(iota)
 	ClientListening
 	ClientMsg
+	ClientRegistering
+	ClientPlay
+	ClientQuit
 )
 
 type ClientMessage struct {

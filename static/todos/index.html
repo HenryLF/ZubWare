@@ -4,13 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/style.css" />
-    <script src="/lib/sendJSON.js" type="module"></script>
 
+    <script src="/lib/indexedDatabase.js"></script>
+    <script src="/lib/sendJSON.js"></script>
     <script src="/lib/htmlCanvas.js"></script>
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@0.12.3/dist/cdn.min.js"
-    ></script>
+    <script src="/lib/createUUID.js"></script>
+    <script type="module">
+      window.db = await initDataBase("todos");
+    </script>
     <script
       defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"
@@ -18,7 +19,7 @@
     <title>ZubWare</title>
   </head>
   <body>
-    <main class="main">
+    <main class="main" x-data="{list : []}" x-init="list = await db.getKeys()">
       <header class="center">
         <a href="/">
           <image src="/assets/logo.svg" class="main-logo" />
@@ -26,10 +27,199 @@
       </header>
       <section
         class="flex flex-col items-center space-y-small h-full"
-        id="ajax-target"
         x-merge="append"
-        @load-todo.window="$ajax('/new-todo',{method : 'POST' , body : sendJSON($event.detail),  target : 'ajax-target' } )"
-      ></section>
+      >
+        <template x-for="(item, key) in list">
+          <span class="w-full">
+            <!-- text-template -->
+            <template x-if="item.type == 'text'">
+              <div
+                :key="key"
+                class="todo-container grid grid-cols-3 grid-rows-1"
+                x-data="{ type : 'text',
+                        id: item.id,
+                        active : true,
+                        title : '' ,
+                        text : '',
+                        async init(){
+                          let data = await db.getItem(item.id)
+                          if (data){
+                          this.title = data.title
+                          this.text = data.text
+                          }
+                        }
+                      }"
+                x-init="$watch('$data',data =>data.active && db.storeItem(data))"
+                x-show="active"
+              >
+                <image
+                  src="/assets/delete.svg"
+                  class="delete-icon"
+                  @click="await db.removeItem(id); active = false"
+                >
+                </image>
+                <input
+                  class="p-small h2 col-span-1"
+                  type="text"
+                  placeholder="Title"
+                  x-model="title"
+                />
+                <textarea
+                  @change="text=$el.value"
+                  class="p-small h3 col-span-2"
+                  placeholder="Type your text here"
+                  x-model="text"
+                ></textarea>
+              </div>
+            </template>
+
+            <!-- checklist template -->
+            <template x-if="item.type == 'checklist'">
+              <div
+                class="todo-container flex flex-row flex-wrap"
+                x-data="{ type : 'checklist',
+                        id: item.id,
+                        title : '' ,
+                        active : true,
+                        list: [{title : '' , done : false , key : 0 }],
+                        async init(){
+                          let data = await db.getItem(item.id)
+                          if (data){
+                          this.title = data.title
+                          this.list = data.list
+                          }
+                        }
+                      }"
+                x-init="$watch('$data',data => data.active && db.storeItem(data))"
+                x-show="active"
+              >
+                <image
+                  src="/assets/delete.svg"
+                  class="delete-icon"
+                  @click="await db.removeItem(id); active = false"
+                >
+                </image>
+                <input
+                  class="p-smaller h2 col-span-1 w-full"
+                  type="text"
+                  placeholder="Title"
+                  x-model="title"
+                />
+                <template x-for="(task , key) in list">
+                  <div
+                    class="w-1/3 flex flex-row items-center"
+                    x-effet="list[k]=task"
+                  >
+                    <input
+                      @change="task.title=$el.value"
+                      type="text"
+                      class="p-small h2"
+                      x-init="$el.value=task.title"
+                      placeholder="Task"
+                    />
+                    <image
+                      @click="task.done=!task.done"
+                      :src="task.done ? '/assets/done.svg' : '/assets/notdone.svg'"
+                    >
+                    </image>
+                    <image
+                      @click="list = list.filter(e=>e.k!==task.k)"
+                      src="/assets/delete.svg"
+                    ></image>
+                  </div>
+                </template>
+                <div
+                  class="w-1/3"
+                  @click="list.push({title : '' , done : false, k : list.length })"
+                >
+                  <h2 class="p-small">New task</h2>
+                </div>
+              </div>
+            </template>
+
+            <!-- image template -->
+
+            <template x-if="item.type == 'image'">
+              <div
+                class="todo-container grid grid-cols-3 grid-rows-1"
+                x-data="{ type : 'image',
+                        id: item.id,
+                        title : '' ,
+                        active : true,
+                        base:'' ,
+                        overlay: '',
+                        async init(){
+                          let data = await db.getItem(item.id)
+                            if (data){
+                            this.title = data.title
+                            this.base = data.base
+                            this.overlay = data.overlay
+                            }
+                          }
+                      }"
+                x-init="$watch('$data', data => data.active && db.storeItem(data))"
+                x-show="active"
+              >
+                <image
+                  src="/assets/delete.svg"
+                  class="delete-icon"
+                  @click="await db.removeItem(id); active = false"
+                />
+                <div class="col-span-1 p-small flex flex-col justify-around">
+                  <input
+                    class="p-smaller h2"
+                    type="text"
+                    placeholder="Title"
+                    x-model="title"
+                  />
+                  <input
+                    class="p-smaller h2"
+                    type="file"
+                    accept="image/*"
+                    @change="async () =>base = await fileToB64($el.files[0]) "
+                  />
+                  <button class="button" @click="overlay=''; clearCanvas(id) ">
+                    Clear
+                  </button>
+                  <input
+                    type="range"
+                    min="1"
+                    max="20"
+                    step="1"
+                    value="2"
+                    name="linewidth"
+                    x-ref="linewidth"
+                    @change="setCanvasSettings(id,$el.value)"
+                  />
+                  <label for="linewidth">Linewidth </label>
+                  <input
+                    type="color"
+                    name="color"
+                    value="#000000"
+                    @change="setCanvasSettings(id,null,$el.value)"
+                  />
+                  <label for="color">Color</label>
+                </div>
+                <div class="col-span-2 p-small">
+                  <div class="drawing-area">
+                    <image
+                      class="drawing-element"
+                      style="z-index: 1"
+                      :src="base"
+                    ></image>
+                    <canvas
+                      class="drawing-element"
+                      style="z-index: 2"
+                      :id="id"
+                      x-init=" async ()=> {await init(); initCanvas(id , $data.overlay , (k)=>{overlay=k})}"
+                    ></canvas>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </span>
+        </template>
+      </section>
 
       <div id="new-todo" class="new-todo" x-data="{type : 'text'}">
         <div>
@@ -45,23 +235,14 @@
           </select>
         </div>
         <image
-          @click="dispatchEvent(new CustomEvent('load-todo',{detail : {id : null, type}}))"
+          @click="list.push({id : createUUID(), type})"
           src="/assets/add.svg"
           class="size-larger p-small hover-grow"
         />
+      </div>
       <footer class="center">
         <h3>Henri & Henry Hacking Manufactory</h3>
       </footer>
     </main>
-
-    <script type="module">
-      import initDB from "/lib/indexedDatabase.js";
-      window.db = await initDB("todos");
-      let keys = await window.db.getKeys();
-      for (let data of keys) {
-        window.dispatchEvent(new CustomEvent("load-todo", { detail: data }));
-        await new Promise((r) => setTimeout(r, 100));
-      }
-    </script>
   </body>
 </html>

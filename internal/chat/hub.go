@@ -60,7 +60,7 @@ func (h *hub) run() {
 }
 
 func (h *hub) broadcastInfo() {
-	h.broadcast <- ws.ServerMessage{Type: ws.ServerLobbyInfo, Payload: h.info()}
+	h.broadcast <- ws.ServerMessage{Type: ws.ServerHubInfo, Payload: h.info()}
 }
 
 func (h *hub) handleClient(sub ws.Client) {
@@ -85,7 +85,7 @@ func (h *hub) handleClient(sub ws.Client) {
 				sub.SetName(data.Name)
 			}
 
-			h.broadcast <- ws.ServerMessage{Type: ws.ServerMsg, Payload: msg.Payload}
+			h.broadcast <- ws.ServerMessage{Type: ws.ServerHubMsg, Payload: msg.Payload}
 		case <-closeCh:
 			h.unreg <- sub
 			return

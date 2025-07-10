@@ -1,7 +1,7 @@
 package entrypoint
 
 
-templ EntryPoint(token string , url string) {
+templ EntryPointTempl(token string , url string) {
 <section id="ajax-target" x-data="{}">
     <div class="w-8/10">
         <p>Auth. token : <span x-ref="token">{token}</span>
@@ -17,7 +17,7 @@ templ EntryPoint(token string , url string) {
 }
 
 
-templ Error(reason string) {
+templ EntryPointError(reason string) {
 <section id="ajax-target">
     <div class="w-8/10">{reason}</div>
     <a href="/api">

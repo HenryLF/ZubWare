@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 	"zubware/internal/chat"
-	"zubware/internal/handles"
+	"zubware/internal/entrypoint"
 	"zubware/internal/utils"
 )
 
@@ -14,9 +14,8 @@ func main() {
 
 	router.HandleFunc("/", utils.HttpLogger(FileServer))
 
-	router.HandleFunc("/new-todo", utils.HttpLoggerFunc(handles.Todos))
-	router.HandleFunc("/new-entry-point", utils.HttpLoggerFunc(handles.NewEntryPoint))
-	router.HandleFunc("/api/{id}", utils.HttpLoggerFunc(handles.ServeEntryPoint))
+	router.HandleFunc("/new-entry-point", utils.HttpLoggerFunc(entrypoint.NewEntryPoint))
+	router.HandleFunc("/api/{id}", utils.HttpLoggerFunc(entrypoint.ServeEntryPoint))
 	router.HandleFunc("/wschat", chat.ChatServer)
 
 	http.Handle("/", router)

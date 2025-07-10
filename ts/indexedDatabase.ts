@@ -6,7 +6,7 @@ interface DBObject {
 function unproxify(prox: object) {
   return JSON.parse(JSON.stringify(prox));
 }
-export default function initDataBase(storeName: string) {
+export function initDataBase(storeName: string) {
   console.log(`Oppenning local DB store ${storeName}.`);
   return new Promise((resolve, reject) => {
     const request = indexedDB.open("ZubWare");

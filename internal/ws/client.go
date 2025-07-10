@@ -50,7 +50,7 @@ func (c *client) Sub(code ClientCode) chan ClientMessage {
 	if c.closed {
 		return nil
 	}
-	ch := make(chan ClientMessage)
+	ch := make(chan ClientMessage, 10)
 	c.broadcaster.reg <- struct {
 		code ClientCode
 		ch   chan ClientMessage
@@ -86,7 +86,7 @@ func (c *client) readPump() {
 		err := c.conn.ReadJSON(&msg)
 		if err != nil {
 			log.Println("PlayerReadJSON :: ", err)
-			if websocket.IsCloseError(err, 1000, 1001, 1005, 1006) {
+			if websocket.IsUnexpectedCloseError(err) {
 				log.Print("...closing")
 				return
 			}
@@ -115,7 +115,7 @@ func (c *client) writePump() {
 			err := c.conn.WriteJSON(msg)
 			if err != nil {
 				log.Println("PlayerWriteJSON ::", c.id, err)
-				if websocket.IsCloseError(err, 1000, 1001, 1006) {
+				if websocket.IsUnexpectedCloseError(err) {
 					log.Print("...closing")
 					return
 				}
@@ -123,8 +123,9 @@ func (c *client) writePump() {
 		case <-ticker.C:
 			c.conn.SetWriteDeadline(time.Now().Add(WRITE_WAIT))
 			err := c.conn.WriteMessage(websocket.PingMessage, nil)
-			if err != nil {
+			if websocket.IsUnexpectedCloseError(err) {
 				log.Println("PlayerWritePing :: ", c.id, err)
+				log.Print("...closing")
 				return
 			}
 		}
@@ -140,7 +141,7 @@ func NewClient(w http.ResponseWriter, r *http.Request) (Client, error) {
 	c := &client{
 		conn:        conn,
 		broadcaster: newBroadcaster(),
-		send:        make(chan ServerMessage),
+		send:        make(chan ServerMessage, 10),
 		id:          uuid.New(),
 		name:        DEFAULT_NAME,
 	}

@@ -1,11 +1,10 @@
-package handles
+package entrypoint
 
 import (
 	"errors"
 	"net/http"
 	"sync"
 	"time"
-	"zubware/components/entrypoint"
 	"zubware/internal/api"
 )
 
@@ -50,7 +49,7 @@ func NewEntryPoint(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
 	err := r.ParseForm()
 	if err != nil {
-		entrypoint.Error(err.Error()).Render(r.Context(), w)
+		EntryPointError(err.Error()).Render(r.Context(), w)
 		return
 	}
 
@@ -58,13 +57,13 @@ func NewEntryPoint(w http.ResponseWriter, r *http.Request) {
 
 	ep, err := api.NewEntryPoint([]byte(data))
 	if err != nil {
-		entrypoint.Error(err.Error()).Render(r.Context(), w)
+		EntryPointError(err.Error()).Render(r.Context(), w)
 		return
 	}
 
 	err = activeEntryPoint.add(ep)
 	if err != nil {
-		entrypoint.Error(err.Error()).Render(r.Context(), w)
+		EntryPointError(err.Error()).Render(r.Context(), w)
 		return
 	}
 	go func() {
@@ -72,7 +71,7 @@ func NewEntryPoint(w http.ResponseWriter, r *http.Request) {
 		activeEntryPoint.remove(ep)
 	}()
 
-	entrypoint.EntryPoint(ep.Token, ep.URL).Render(r.Context(), w)
+	EntryPointTempl(ep.Token, ep.URL).Render(r.Context(), w)
 
 }
 

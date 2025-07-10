@@ -49,7 +49,7 @@
           <div class="grid grid-cols-3 grid-rows-3 col-span-3 row-span-1">
             <template x-for="(_,num) in Array(9).fill(null)">
               <div
-                class="bordered-anim row-span-1 col-span-1 bg-deeper"
+                class="bordered hover-grow text-center row-span-1 col-span-1 bg-deeper"
                 @click="typeNumber(num+1)"
                 x-text="num+1"
               ></div>
@@ -59,7 +59,7 @@
           <div class="flex flex-col col-span-1 row-span-4">
             <template x-for="op in binaryOp">
               <div
-                class="bordered-anim row-span-1 col-span-1 bg-contrast"
+                class="bordered hover-grow text-center row-span-1 col-span-1 bg-contrast"
                 @click="typeBinary(op)"
                 x-text="op"
               ></div>
@@ -68,26 +68,26 @@
 
           <div class="flex flex-col col-span-1 row-span-4">
             <div
-              class="bordered-anim row-span-1 col-span-1 bg-contrast"
+              class="bordered hover-grow text-center row-span-1 col-span-1 bg-contrast"
               @click="typeUnary('inv')"
             >
               1/x
             </div>
 
             <div
-              class="bordered-anim row-span-1 col-span-1 bg-contrast"
+              class="bordered hover-grow text-center row-span-1 col-span-1 bg-contrast"
               @click="typeUnary('opp')"
             >
               -x
             </div>
             <div
-              class="bordered-anim row-span-1 col-span-1 bg-contrast"
+              class="bordered hover-grow text-center row-span-1 col-span-1 bg-contrast"
               @click="typeUnary('sqrt')"
             >
               &#8730;x
             </div>
             <div
-              class="bordered-anim row-span-1 col-span-1 bg-contrast"
+              class="bordered hover-grow text-center row-span-1 col-span-1 bg-contrast"
               @click="typeBinary('^')"
             >
               x<sup>y</sup>
@@ -96,19 +96,19 @@
 
           <div class="col-span-3 row-span-1 grid grid-cols-3 grid-rows-1">
             <div
-              class="bordered-anim p-small row-span-1 col-span-1 bg-contrast"
+              class="bordered hover-grow text-center row-span-1 col-span-1 bg-contrast"
               @click="typeDot('.')"
             >
               .
             </div>
             <div
-              class="bordered-anim p-small row-span-1 col-span-1 bg-deeper"
+              class="bordered hover-grow text-center row-span-1 col-span-1 bg-deeper"
               @click="typeNumber(0)"
             >
               0
             </div>
             <div
-              class="bordered p-small row-span-1 col-span-1 bg-emphasis"
+              class="bordered hover-grow text-center row-span-1 col-span-1 bg-emphasis"
               @click="typeResult()"
             >
               =

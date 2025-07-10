@@ -1,6 +1,5 @@
-//@ts-ignore
-window.sendJSON = function(payload : object){
-    return {
-        json : JSON.stringify(payload)
-    }
+export function sendJSON(payload: object) {
+  return {
+    json: JSON.stringify(payload),
+  };
 }

@@ -62,17 +62,15 @@
 
       </section>
       <script type="module">
-        import initDB from "/lib/indexedDatabase.js";
-
         document
           .getElementById("store")
           .addEventListener("change", changeStore);
 
         async function changeStore(ev) {
-          const detail = await initDB(this.value);
+          const detail = await initDataBase(this.value);
           window.dispatchEvent(new CustomEvent("store-changed", { detail }));
         }
-        const detail = await initDB("todos");
+        const detail = await initDataBase("todos");
         window.dispatchEvent(new CustomEvent("store-changed", { detail }));
       </script>
       <footer class="center">

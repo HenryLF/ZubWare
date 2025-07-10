@@ -1,11 +1,5 @@
 package ws
 
-import (
-	"log"
-	"maps"
-	"slices"
-)
-
 type broadcaster struct {
 	subs  map[ClientCode]map[chan ClientMessage]struct{}
 	input chan ClientMessage
@@ -88,22 +82,36 @@ func (b *broadcaster) run() {
 }
 
 func (b *broadcaster) broadcast(msg ClientMessage) {
-	log.Println("received", msg, slices.Collect(maps.Keys(b.subs[msg.Type])))
 	for ch := range b.subs[ClientCode(msg.Type)] {
-		ch <- msg
+		select {
+		case _, ok := <-ch:
+			if ok {
+				ch <- msg
+			}
+		default:
+			ch <- msg
+		}
 	}
 }
 
 func newBroadcaster() *broadcaster {
 	subs := map[ClientCode]map[chan ClientMessage]struct{}{}
 
-	subs[ClientConnClose] = map[chan ClientMessage]struct{}{}
-	subs[ClientListening] = map[chan ClientMessage]struct{}{}
-	subs[ClientMsg] = map[chan ClientMessage]struct{}{}
+	for _, code := range []ClientCode{
+		ClientConnClose,
+		ClientListening,
+		ClientMsg,
+		ClientRegistering,
+		ClientPlay,
+		ClientQuit,
+	} {
+
+		subs[code] = map[chan ClientMessage]struct{}{}
+	}
 
 	b := broadcaster{
 		subs:  subs,
-		input: make(chan ClientMessage),
+		input: make(chan ClientMessage, 10),
 		reg: make(chan struct {
 			code ClientCode
 			ch   chan ClientMessage

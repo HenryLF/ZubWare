@@ -176,9 +176,6 @@
   }
 }
 @layer utilities {
-  .relative {
-    position: relative;
-  }
   .col-span-1 {
     grid-column: span 1 / span 1;
   }
@@ -325,6 +322,9 @@
   .px-small {
     padding-inline: var(--spacing-small);
   }
+  .text-center {
+    text-align: center;
+  }
   .text-left {
     text-align: left;
   }
@@ -390,6 +390,14 @@ main {
   flex-direction: column;
   overflow-y: scroll;
   padding: var(--spacing-small);
+}
+.flex-evenly {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
 }
 section {
   display: flex;
@@ -514,6 +522,22 @@ button:hover, select:hover, .tool-icon:hover, .delete-icon:hover, .hover-grow:ho
   transition-duration: var(--tw-duration, var(--default-transition-duration));
   --tw-duration: 200ms;
   transition-duration: 200ms;
+}
+@keyframes trRight {
+  to {
+    transform: translate(100%, 0);
+  }
+}
+@keyframes trLeft {
+  to {
+    transform: translate(-100%, 0);
+  }
+}
+.translate-right {
+  animation: trRight 1.5s ease-in-out alternate infinite;
+}
+.translate-left {
+  animation: trLeft 1.5s ease-in-out alternate infinite;
 }
 @property --tw-rotate-x {
   syntax: "*";

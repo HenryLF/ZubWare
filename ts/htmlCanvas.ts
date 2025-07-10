@@ -7,14 +7,13 @@ type DrawingInfo = {
 };
 
 const cvsSettings = new Map<string, { lw: number; ss: string }>();
-//@ts-ignore
-window.setCanvasSettings = function (id: string, lw?: number, ss?: string) {
+
+export function setCanvasSettings(id: string, lw?: number, ss?: string) {
   const { lw: llw, ss: sss } = cvsSettings.get(id)!;
   cvsSettings.set(id, { lw: lw ?? llw, ss: ss ?? sss });
-};
+}
 
-// @ts-ignore
-window.initCanvas = function (
+export function initCanvas(
   id: string,
   overlay: string,
   cb: (s: string) => void
@@ -66,21 +65,19 @@ window.initCanvas = function (
     }
     drawing.pos = { x, y };
   });
-};
+}
 
-//@ts-ignore
-window.clearCanvas = function (id: string) {
+export function clearCanvas(id: string) {
   const cvs = document.getElementById(id) as HTMLCanvasElement;
   const ctx = cvs.getContext("2d")!;
   ctx.clearRect(0, 0, cvs.width, cvs.height);
-};
+}
 
-//@ts-ignore
-window.fileToB64 = function (file: Blob) {
+export function fileToB64(file: Blob) {
   return new Promise<string | null | ArrayBuffer>((resolve, reject) => {
     const fr = new FileReader();
     fr.readAsDataURL(file);
     fr.onload = () => resolve(fr.result);
     fr.onerror = reject;
   });
-};
+}

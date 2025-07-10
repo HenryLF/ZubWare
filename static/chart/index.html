@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/style.css" />
     <title>ZubWare</title>
+    <script src="/lib/indexedDatabase.js"></script>
     <script type="module">
-      import initDB from "/lib/indexedDatabase.js";
-      window.db = await initDB("charts");
+      window.db = await initDataBase("charts");
     </script>
     <script>
       let ch;

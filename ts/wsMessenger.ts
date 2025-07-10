@@ -2,7 +2,7 @@ enum ServerCode {
   ConnClose = 0,
   ConnOpen = 1,
   MsgIncoming = 2,
-  LobbyInfo = 3,
+  HubInfo = 3,
 }
 enum ClientCode {
   ConnClose = 0,
@@ -18,9 +18,9 @@ type MessageData = {
 };
 
 type ClientData = {
-id: string;
+  id: string;
   name: string;
-}
+};
 
 type LobbyData = ClientData[];
 
@@ -38,25 +38,11 @@ type ServerMessage =
       detail: MessageData;
     }
   | {
-      type: ServerCode.LobbyInfo;
+      type: ServerCode.HubInfo;
       detail: LobbyData;
     };
 
-type ClientMessage =
-  | {
-      type: ClientCode.ConnClose;
-      detail: any;
-    }
-  | {
-      type: ClientCode.Listening;
-    }
-  | {
-      type: ServerCode.MsgIncoming;
-      detail: MessageData;
-    };
-
-//@ts-ignore
-window.initClient = function () {
+export function initClient() {
   return new Promise<(author: string, content: string) => void>(
     (resolve, reject) => {
       const ws = new WebSocket(`ws://${window.location.host}/wschat`);
@@ -65,7 +51,7 @@ window.initClient = function () {
       function sendMsg(author: string, content: string) {
         if (ws.readyState == ws.CLOSED || ws.readyState == ws.CLOSING) return;
         console.log(author, content);
-        clientData.name = author
+        clientData.name = author;
         ws.send(
           JSON.stringify({
             type: ClientCode.MsgOutgoing,
@@ -88,14 +74,14 @@ window.initClient = function () {
             event = new CustomEvent("ws-conn-close", { detail });
             break;
           case ServerCode.ConnOpen:
-            clientData  = detail;
+            clientData = detail;
             ws.send(JSON.stringify({ type: ClientCode.Listening }));
             event = new CustomEvent("ws-conn-open", { detail });
             break;
           case ServerCode.MsgIncoming:
             event = new CustomEvent("ws-message", { detail });
-          break
-          case ServerCode.LobbyInfo:
+            break;
+          case ServerCode.HubInfo:
             event = new CustomEvent("ws-lobbyinfo", { detail });
         }
         event && window.dispatchEvent(event);
@@ -110,12 +96,4 @@ window.initClient = function () {
       };
     }
   );
-};
-
-
-// //@ts-ignore
-// window.sendJSON = function (obj: object) {
-//   return { json: JSON.stringify(obj) };
-// };
-
-
+}

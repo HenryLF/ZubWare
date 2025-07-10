@@ -33,6 +33,10 @@ main {
   @apply p-small;
 }
 
+.flex-evenly {
+  @apply flex flex-col flex-1 w-full items-center justify-evenly;
+}
+
 section {
   @apply flex flex-1 flex-col items-center space-y-small  overflow-y-scroll;
 }
@@ -115,7 +119,7 @@ input[type="number"] {
 button,
 select,
 input[type="text"],
-.bordered{
+.bordered {
   @apply p-smaller font-bold;
   @apply border-2 rounded;
   @apply h-fit;
@@ -127,4 +131,24 @@ select:hover,
 .delete-icon:hover,
 .hover-grow:hover {
   @apply scale-110 transition-transform duration-200;
+}
+
+@keyframes trRight {
+  to {
+    transform: translate(100%, 0);
+  }
+}
+
+
+@keyframes trLeft {
+  to {
+    transform: translate(-100%, 0);
+  }
+}
+.translate-right {
+  animation: trRight 1.5s ease-in-out alternate infinite;
+}
+
+.translate-left {
+  animation: trLeft 1.5s ease-in-out alternate infinite;
 }
